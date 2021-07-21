@@ -85,6 +85,10 @@ public class EditorSortAction extends AnAction {
 
                     //Get the require statement within the namespace declaration
                     int subIndexOfRequire = namespace.indexOf("(:require");
+                    if (subIndexOfRequire == -1) {
+                        return;
+                    }
+
                     int subIndexOfEndRequire = namespace.indexOf(")", subIndexOfRequire) + 1;
                     String requireStmt = namespace.substring(subIndexOfRequire, subIndexOfEndRequire);
 
@@ -93,12 +97,19 @@ public class EditorSortAction extends AnAction {
                     requiredNamespaces.sort(null);
 
                     // Convert ArrayList back to String
-                    StringBuilder requiredString = new StringBuilder("(:require");
-                    for (String ns : requiredNamespaces){
-                        requiredString
-                                .append("\n   ")
-                                .append(ns); // TODO(AJ) Add proper spacing here DocumentUtil
+                    StringBuilder requiredString = new StringBuilder();
+                    boolean isFirst = true;
+
+                    for (String ns : requiredNamespaces) {
+                        if (isFirst) {
+                            requiredString.append("(:require ");
+                            isFirst = false;
+                        } else {
+                            requiredString.append("\n            ");
+                        }
+                        requiredString.append(ns);
                     }
+
                     requiredString.append(")");
 
                     document.replaceString(
